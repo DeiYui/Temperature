@@ -1,0 +1,36 @@
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <LiquidCrystal.h>
+#define ONE_WIRE_BUS 10
+// Setup LCD 1602
+const int rs = 8, en = 7, d4 = 6, d5 = 5, d6 = 4, d7 = 3;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+// Setup a oneWire instance to communicate with any OneWire devices
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Pass our oneWire reference to Dallas Temperature sensor 
+DallasTemperature sensors(&oneWire);
+
+void setup(void)
+{
+  // Start serial communication for debugging purposes
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  // Start up the library
+  sensors.begin();
+}
+void loop(void){ 
+  // Call sensors.requestTemperatures() to issue a global temperature and Requests to all devices on the bus
+  sensors.requestTemperatures(); 
+  
+  Serial.print("Celsius temperature: ");
+  // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
+  Serial.println(sensors.getTempCByIndex(0)); 
+  // Show on the LCD
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Temperature: ");
+  lcd.setCursor(0, 1);
+  lcd.print(sensors.getTempCByIndex(0));
+  delay(2000);
+}
